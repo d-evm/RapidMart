@@ -17,8 +17,8 @@ public class Zone {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;       // e.g., Zone A
-    private String pincode;    // e.g., 400001
+    private String name;
+    private String pincode;
 
     @OneToMany(mappedBy = "zone", cascade = CascadeType.ALL)
     private List<Store> stores;
