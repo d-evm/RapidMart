@@ -33,6 +33,7 @@ public class AuthService {
                 .name(request.getName())
                 .pincode(request.getPincode())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
+                .role(User.Role.USER)
                 .build();
 
         userRepository.save(user);
