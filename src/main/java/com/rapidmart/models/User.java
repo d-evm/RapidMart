@@ -14,6 +14,12 @@ import java.util.List;
 @Table(name = "users")
 public class User {
 
+    public enum Role {
+        USER,
+        ADMIN,
+        CO_ADMIN
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,4 +35,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Order> orders = new ArrayList<>();
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;  // Default role
+
 }
