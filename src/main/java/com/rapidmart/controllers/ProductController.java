@@ -1,5 +1,6 @@
 package com.rapidmart.controllers;
 
+import com.rapidmart.dtos.ProductRequestDTO;
 import com.rapidmart.dtos.ProductResponseDTO;
 import com.rapidmart.models.User;
 import com.rapidmart.models.Zone;
@@ -8,11 +9,9 @@ import com.rapidmart.repositories.ZoneRepository;
 import com.rapidmart.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -39,6 +38,19 @@ public class ProductController {
         Zone zone = zoneRepository.findByPincode(pincode);
 
         return ResponseEntity.ok(productService.getProductsByZone(zone.getId()));
+    }
+
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'CO_ADMIN')")
+    public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody ProductRequestDTO dto) {
+        return ResponseEntity.ok(productService.createProduct(dto));
+    }
+
+    @PutMapping("/{productId}/quantity")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CO_ADMIN')")
+    public ResponseEntity<String> updateQuantity(@PathVariable Long productId, @RequestParam int quantity) {
+        productService.updateQuantity(productId, quantity);
+        return ResponseEntity.ok("Quantity updated.");
     }
 
 
