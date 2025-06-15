@@ -20,7 +20,8 @@ public class MyUserDetailsService implements UserDetailsService {
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
                 .password(user.getPasswordHash())
-                .authorities("USER")
+                .authorities("ROLE_" + user.getRole().name()) // ✅ correct mapping
                 .build();
     }
 }
+
