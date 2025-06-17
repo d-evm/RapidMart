@@ -29,18 +29,27 @@ public class OrderUpdateScheduler {
                 .toList();
 
         for (Order order : activeOrders) {
-            int minsLeft = (int) Duration.between(LocalDateTime.now(), order.getEstimatedDeliveryTime()).toMinutes();
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime eta = order.getEstimatedDeliveryTime();
+            LocalDateTime orderTime = order.getOrderTime();
+
+            long totalDurationSec = Duration.between(orderTime, eta).getSeconds();
+            long elapsedSec = Duration.between(orderTime, now).getSeconds();
+
+            double progress = (double) elapsedSec / totalDurationSec;
 
             String status;
-            if (minsLeft > 12) status = "Order Confirmed";
-            else if (minsLeft > 7) status = "Packed";
-            else if (minsLeft > 0) status = "Out for Delivery";
+            if (progress < 0.1) status = "Order Confirmed";
+            else if (progress < 0.3) status = "Packing";
+            else if (progress < 1.0) status = "Out for Delivery";
             else status = "Delivered";
 
             if (!order.getStatus().equals(status)) {
                 order.setStatus(status);
                 orderRepository.save(order);
             }
+
+            int minsLeft = (int) Duration.between(now, eta).toMinutes();
 
             OrderStatusUpdateDTO dto = new OrderStatusUpdateDTO();
             dto.setOrderId(order.getId());
@@ -51,3 +60,4 @@ public class OrderUpdateScheduler {
         }
     }
 }
+
