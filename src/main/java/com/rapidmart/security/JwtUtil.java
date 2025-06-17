@@ -1,18 +1,27 @@
 package com.rapidmart.security;
 
+import com.rapidmart.models.User;
+import com.rapidmart.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Component
 public class JwtUtil {
+
+    @Autowired
+    private UserRepository userRepository;
 
     private final SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
@@ -22,8 +31,16 @@ public class JwtUtil {
         return secretKey;
     }
 
-    public String generateToken(String username){
+    public String generateToken(String username) {
+        // look up user by username/email
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", user.getRole().name()); // ✅ inject role here
+
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
