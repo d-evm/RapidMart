@@ -51,12 +51,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
-        System.out.println("JWT Filter triggered");
-        System.out.println("Token: " + token);
-        System.out.println("Auth Header: " + authHeader);
-        System.out.println("Extracted Email: " + userEmail);
-        System.out.println("User Authenticated: " + (SecurityContextHolder.getContext().getAuthentication() != null));
-
         filterChain.doFilter(request, response);
     }
 }
