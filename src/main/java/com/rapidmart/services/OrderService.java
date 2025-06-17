@@ -106,7 +106,7 @@ public class OrderService {
 
         // calculate ETA
 
-        int itemProcessingTimeSec = request.getItems().size() * 10; // 10 sec per item
+        int itemProcessingTimeSec = request.getItems().size() * 20; // 20 sec per item
         int packingTimeSec = 60; // fixed 1 min packing
 
         // realistic delivery time: base time + per km time
@@ -118,7 +118,7 @@ public class OrderService {
         int pendingOrders = (int) selectedStore.getOrders().stream()
                 .filter(o -> !o.getStatus().equalsIgnoreCase("Delivered"))
                 .count();
-        int bufferTimeSec = pendingOrders * 30; // 30 sec per order
+        int bufferTimeSec = pendingOrders * 60; // 60 sec per order
 
         // total ETA in seconds
         int totalEtaSeconds = itemProcessingTimeSec + packingTimeSec + (int) deliveryTimeSec + bufferTimeSec;
